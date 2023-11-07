@@ -1,0 +1,18 @@
+type: rsna_1d
+csv_path: '/local-scratch/nigam/datasets/RSNA_PE/rsna_train_master.csv'
+sample_frac: 1.0
+dicom_dir:  /local-scratch/nigam/datasets/RSNA_PE/train
+target: 'pe_present_on_image'
+contextualize_slice: False # To test 
+sample_strategy: fix
+num_slices: 150
+feature_size: 768
+weighted_sample: true
+batch_size: 32
+#hdf5_path: null
+hdf5_path: /local-scratch/nigam/datasets/RSNA_PE/rsna_features/features.hdf5
+
+pretrain_args:
+  model_type: resnetv2_101_ct
+  input_size: 256
+  channel_type: window

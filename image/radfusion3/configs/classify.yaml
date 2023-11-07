@@ -1,8 +1,9 @@
 n_gpus: 1
 get_features: true 
 stage: classify
-output_dir: /share/pi/nigam/projects/zphuo/data/PE/inspect/image_modality/outputs
-test_split: all
+output_dir: /local-scratch/nigam/projects/zphuo/data/PE/inspect/image_modality/outputs/wandb # use for wandb logging
+test_split: test  # all
+ckpt: null
 
 lr: 0.0005
 optimizer: 
@@ -15,7 +16,7 @@ monitor:
   mode: max
 
 exp:
-  base_dir: ./outputs
+  base_dir: /local-scratch/nigam/projects/zphuo/data/PE/inspect/image_modality/output # use for ckpt saving
   name: 'classify'
 
 trainer:
@@ -23,12 +24,15 @@ trainer:
   seed: 6
   val_check_interval: 1.0
   limit_val_batches: 1.0
-  resume_from_checkpoint: null
+  # resume_from_checkpoint: null # removed in pytorch-lightning 2.0.0
   precision: 16  # set to 16 for O1 mixed precision, 32 for O0 full precision
   max_epochs: 30
   gradient_clip_val: 0
   num_workers: 8
+  strategy: ddp
+  position_encoding: true
 
 defaults:
+  - _self_
   - dataset: stanford_featurized
   - model: model_1d

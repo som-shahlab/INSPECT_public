@@ -39,11 +39,9 @@ class Attention(nn.Module):
         feature_dim = self.feature_dim
         step_dim = self.step_dim
 
-
-        eij = torch.mm(
-            x.contiguous().view(-1, feature_dim), 
-            self.weight
-        ).view(-1, step_dim)
+        eij = torch.mm(x.contiguous().view(-1, feature_dim), self.weight).view(
+            -1, step_dim
+        )
 
         if self.bias:
             eij = eij + self.b
@@ -81,7 +79,6 @@ class RNNSequentialEncoder(nn.Module):
         num_layers: int = 1,
         dropout_prob: float = 0.0,
     ):
-
         super(RNNSequentialEncoder, self).__init__()
 
         self.feature_size = feature_size
@@ -111,73 +108,76 @@ class RNNSequentialEncoder(nn.Module):
 
 
 def get_transformer(n_layers, seq_input_size, nhead, hidden_size, dropout_prob):
-
     layers = torch.nn.Sequential()
 
     for _ in range(n_layers):
-        layers.append(nn.TransformerEncoderLayer(
-            d_model=seq_input_size, 
-            nhead=nhead,
-            batch_first=True,
-            dim_feedforward=hidden_size,
-            dropout=dropout_prob,
-        ))
+        layers.append(
+            nn.TransformerEncoderLayer(
+                d_model=seq_input_size,
+                nhead=nhead,
+                batch_first=True,
+                dim_feedforward=hidden_size,
+                dropout=dropout_prob,
+            )
+        )
 
     return layers
-
 
 
 class Model1D(nn.Module):
     def __init__(self, cfg, num_classes=1):
         super(Model1D, self).__init__()
 
-        # rnn input size 
-        #seq_input_size = cfg.dataset.pretrain_args.model_type
+        # rnn input size
+        # seq_input_size = cfg.dataset.pretrain_args.model_type
         model_fn = getattr(vision_backbones, cfg.dataset.pretrain_args.model_type)
         model, seq_input_size = model_fn()
+        if cfg.trainer.position_encoding:
+            seq_input_size += 1
         del model
 
         if cfg.dataset.contextualize_slice:
             seq_input_size = seq_input_size * 3
 
-        # classifier input size 
+        # classifier input size
         cls_input_size = cfg.model.seq_encoder.hidden_size
 
-        if cfg.model.seq_encoder.rnn_type == 'transformer':
+        if cfg.model.seq_encoder.rnn_type == "transformer":
             cls_input_size = seq_input_size
             self.seq_encoder = get_transformer(
                 n_layers=cfg.model.seq_encoder.num_layers,
-                seq_input_size=seq_input_size, 
+                seq_input_size=seq_input_size,
                 nhead=16,
                 hidden_size=cfg.model.seq_encoder.hidden_size,
                 dropout_prob=cfg.model.seq_encoder.dropout_prob,
             )
-        elif cfg.model.seq_encoder.rnn_type in ['LSTM', 'GRU']:
+        elif cfg.model.seq_encoder.rnn_type in ["LSTM", "GRU"]:
             if cfg.model.seq_encoder.bidirectional:
                 cls_input_size = cls_input_size * 2
-            self.seq_encoder = RNNSequentialEncoder(seq_input_size, **cfg.model.seq_encoder)
+            self.seq_encoder = RNNSequentialEncoder(
+                seq_input_size, **cfg.model.seq_encoder
+            )
         else:
-            raise Exception('')
+            raise Exception("")
 
         if "attention" in cfg.model.aggregation:
             self.attention = Attention(cls_input_size, cfg.dataset.num_slices)
 
-        if cfg.model.aggregation == 'attention+max':
+        if cfg.model.aggregation == "attention+max":
             cls_input_size = cls_input_size * 2
 
-        #self.batch_norm_layer = torch.nn.BatchNorm1d(cls_input_size)
+        # self.batch_norm_layer = torch.nn.BatchNorm1d(cls_input_size)
         self.classifier = nn.Linear(cls_input_size, num_classes)
         self.cfg = cfg
 
     def forward(self, x, get_features=False, mask=None):
         x = self.seq_encoder(x)
         x, w = self.aggregate(x, mask)
-        #x = self.batch_norm_layer(x)
+        # x = self.batch_norm_layer(x)
         pred = self.classifier(x)
         return pred, x
 
     def aggregate(self, x, mask=None):
-
         if self.cfg.model.aggregation == "attention":
             return self.attention(x, mask)
         elif self.cfg.model.aggregation == "attention+max":

@@ -1,12 +1,12 @@
-n_gpus: 1
+n_gpus: 2
 get_features: true 
 stage: extract
-output_dir: /home/mschuang/radfusion3.0/outputs
+#output_dir: /home/mschuang/radfusion3.0/outputs
 test_split: all
 
 exp:
-  base_dir: ./outputs
-  name: test
+  base_dir: /local-scratch/nigam/datasets/PE/inspect/exp
+  name: all # test
 
 trainer:
   weights_summary: top
@@ -21,4 +21,4 @@ trainer:
 
 defaults:
   - dataset: stanford_16_22
-  - model: dinov2
+  - model: resnetv2_ct # dinov2

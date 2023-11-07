@@ -1,0 +1,15 @@
+type: rsna
+csv_path: '/local-scratch/nigam/datasets/RSNA_PE/rsna_train_master.csv'
+sample_frac: 1.0
+dicom_dir: /local-scratch/nigam/datasets/RSNA_PE/train
+output_dir: /local-scratch/nigam/datasets/RSNA_PE/rsna_features
+test_split: all
+
+batch_size: 256
+
+transform:
+    channels: repeat 
+    resize_size: 256
+    crop_size: 224
+    final_size: 224
+

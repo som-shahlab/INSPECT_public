@@ -35,11 +35,43 @@ pip install "femr_cuda[models]==0.0.20"
 
 
 
+# ***Image modality experiment***
+To generate image model results: 
+- Make sure to change the dicom\_dir and csv\_path in configs files from **./radfusion/configs/dataset**
+- Train slice encoder using **run_rsna.sh**. Make sure the download the RSNA RESPECT dataset from [here](https://www.rsna.org/education/ai-resources-and-training/ai-image-challenge/rsna-pe-detection-challenge-2020)
+- Extract slice representation using **run_featurize.sh**. 
+- After that you can using **run_classify_all.sh** to get classification results on all 8 tasks
+    - If you want, run hyperparameter search with **wandb sweep sweep.yaml**. Note that line 8 specifies the prediction target. 
+
+
+## To simply replicate our results (injesting our trained model weights)
+> conda activate radfusion3 \
+> cd image \
+> ./run_classify_all.sh
 
 
 
 
-### &rarr; Example to run (assume you installed FEMR):
+# ***EHR modality experiment***
+This code implements the EHR component of the INSPECT code and benchmark.
+
+It is recommended to run Python 3.10 with this code as it has only been tested with Python 3.10
+
+In order to use:
+
+> cd ehr\
+> pip install -r requirements.txt \
+> run_all_ehr.py # with the path to the INSPECT data release, a path to store output, a path to a download from Athena, and a path to a pretrained MOTOR model. 
+
+Athena is an OHDSI service for downloading ontologies. Simply visit https://athena.ohdsi.org, create an account, and click download at the top.
+
+MOTOR will be obtainable from  https://huggingface.co/StanfordAIMI (release still in progress).
+
+python run_all_ehr.py --path_to_data PATH_TO_DATASET --path_to_output PATH_TO_OUTPUT --path_to_athena PATH_TO_ATHENA_DOWNLOAD --path_to_motor PATH_TO_MOTOR
+
+The output of this command can be analyzed with get_model_performance.py in the parent folder.
+
+### &rarr; Example to run ehr code (assume you installed FEMR):
 > conda activate FEMR_ENV \
 > cd ehr \
 > python run_all_ehr.py \
@@ -70,9 +102,10 @@ Or
 
 > [INFO] Transformed the model function.
 
-Those are innate logging from FEMR for debugging by Ethan. You only need to search for key words in your terminal to see performance (or you can go to each folder */motor_results/{task}/log* to see the results)
+Those are innate logging from FEMR for debugging. You only need to search for key words in your terminal to see performance (or you can go to each folder */motor_results/{task}/log* to see the results)
 
 > Test AUROC: 0.8*****
+
 
 
 

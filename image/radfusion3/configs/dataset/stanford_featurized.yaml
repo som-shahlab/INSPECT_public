@@ -1,7 +1,7 @@
 type: 1d
-csv_path: '/share/pi/nigam/projects/zphuo/data/omop_extract_PHI/som-nero-phi-nigam-starr.frazier/cohort_0.2.0_master_file.csv'
+csv_path: '/share/pi/nigam/projects/zphuo/data/omop_extract_PHI/som-nero-phi-nigam-starr.frazier/cohort_0.2.0_master_file_anon.csv'
 sample_frac: 1.0
-dicom_dir:  /home/mschuang/data/pe_all/
+dicom_dir:  /local-scratch/nigam/datasets/PE/inspect/anon_dicoms
 target: 12_month_mortality
 contextualize_slice: False # To test 
 sample_strategy: fix
@@ -9,6 +9,8 @@ num_slices: 250
 feature_size: 768
 weighted_sample: true
 batch_size: 32
+#hdf5_path: null
+hdf5_path: /local-scratch/nigam/datasets/PE/inspect/anon_pe_features_full_new/features.hdf5
 
 pretrain_args:
   model_type: resnetv2_101_ct
