@@ -10,7 +10,7 @@ This repository contains both the code to generate the INSPECT dataset as well a
 
 Once you have ran both the ehr and image analysis, you can do model fusion and reproduce our result tables by running get_model_performance.py.
 
-# Installation of **FEMR**
+# Installation of **FEMR** 💿
 Our data preprocessing pipeline we use **[FEMR  (Framework for Electronic Medical Records)](https://github.com/som-shahlab/femr)**, a Python package for building deep learning models with EHR data. 
 
 You must also have CUDA/cuDNN installed (we recommend CUDA 11.8 and cuDNN 8.7.0)
@@ -20,7 +20,7 @@ pip install --upgrade "jax[cuda11_pip]==0.4.8" -f https://storage.googleapis.com
 pip install "femr_cuda[models]==0.0.20"
 ```
 
-# ***Comparison with previous datasets***
+# ***Comparison with previous datasets*** 📊
 
 | Dataset                            | Imaging Modalities            | Reports | EHR     | #Patients | #Image Studies | Diagnostic Tasks | Prognostic Tasks |
 |------------------------------------|-------------------------------|---------|---------|-----------|----------------|------------------|------------------|
@@ -35,7 +35,7 @@ pip install "femr_cuda[models]==0.0.20"
 
 
 
-# ***Image modality experiment***
+# 1. Image modality experiment 
 To generate image model results: 
 - Make sure to change the dicom\_dir and csv\_path in configs files from **./radfusion/configs/dataset**
 - Train slice encoder using **run_rsna.sh**. Make sure the download the RSNA RESPECT dataset from [here](https://www.rsna.org/education/ai-resources-and-training/ai-image-challenge/rsna-pe-detection-challenge-2020)
@@ -44,7 +44,7 @@ To generate image model results:
     - If you want, run hyperparameter search with **wandb sweep sweep.yaml**. Note that line 8 specifies the prediction target. 
 
 
-## To simply replicate our results (injesting our trained model weights)
+### To simply replicate our results (injesting our trained model weights)
 > conda activate radfusion3 \
 > cd image \
 > ./run_classify_all.sh
@@ -52,7 +52,7 @@ To generate image model results:
 
 
 
-# ***EHR modality experiment***
+# 2. EHR modality experiment
 This code implements the EHR component of the INSPECT code and benchmark.
 
 It is recommended to run Python 3.10 with this code as it has only been tested with Python 3.10
@@ -109,5 +109,17 @@ Those are innate logging from FEMR for debugging. You only need to search for ke
 
 
 
+
+
+# 3. Aggregate results
+To get performance results, simply run
+
+> export path_to_data="PATH/TO/COHORT/CSV" \
+> export path_to_output="PATH/TO/OUTPUT/FOLDERS/FROM/ABOVE/MODALITES" \
+> python get_model_performance.py \
+>    --path_to_data \${path_to_data} \
+>    --path_to_output ${path_to_output} \
+>    --metric auroc \
+>    --multiple_seeds "0 1 2 3 4" 
 
 
