@@ -1,0 +1,16 @@
+type: 1d
+csv_path: '/share/pi/nigam/projects/zphuo/data/omop_extract_PHI/som-nero-phi-nigam-starr.frazier/cohort_0.2.0_master_file.csv'
+sample_frac: 1.0
+dicom_dir:  /home/mschuang/data/pe_all/
+target: 12_month_mortality
+contextualize_slice: False # To test 
+sample_strategy: fix
+num_slices: 250
+feature_size: 768
+weighted_sample: true
+batch_size: 32
+
+pretrain_args:
+  model_type: resnetv2_101_ct
+  input_size: 256
+  channel_type: window

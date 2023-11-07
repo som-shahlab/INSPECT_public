@@ -1,0 +1,4 @@
+type: model_2d
+model_name: vit_base_16_dinov1_ct
+pretrain_type: dinov1
+num_class: 1

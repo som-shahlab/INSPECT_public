@@ -1,0 +1,15 @@
+type: 2d
+numpy_dir: '/home/mschuang/data/pe_all_numpy_anon' 
+csv_path: '/home/mschuang/radfusion3.0/utils/inspect_cohort.csv'
+sample_frac: 1.0
+dicom_dir:  /home/mschuang/data/pe_all/
+
+
+batch_size: 256
+
+transform:
+    channels: repeat 
+    resize_size: 256
+    crop_size: 224
+    final_size: 224
+

@@ -1,0 +1,100 @@
+program: run_classify.py
+command:
+  - ${env}
+  - ${interpreter}
+  - ${program}
+  - "model=model_1d"
+  - "dataset=stanford_featurized"
+  - "dataset.target=12_month_ph_motor"
+entity: zphuo
+project: impact
+method: bayes
+metric:
+  name: val/_auroc
+  goal: maximize
+parameters:
+  lr:
+    distribution: categorical
+    values:
+      - 0.005
+      - 0.001
+      - 0.0005
+      - 0.0001
+  model.aggregation:
+    distribution: categorical
+    values:
+      - 'max'
+      - 'mean'
+      - 'attention'
+      - 'attention+max'
+  model.seq_encoder.rnn_type:
+    distribution: categorical
+    values:
+      - 'LSTM'
+      - 'GRU'
+      - 'transformer'
+  model.seq_encoder.hidden_size:
+    distribution: categorical
+    values:
+      - 64
+      - 128
+      - 256
+  model.seq_encoder.bidirectional:
+    distribution: categorical
+    values:
+      - true
+      - false
+  model.seq_encoder.num_layers:
+    distribution: categorical
+    values:
+      - 1
+      - 3 
+  model.seq_encoder.dropout_prob:
+    distribution: categorical
+    values:
+      - 0.0
+      - 0.25
+      - 0.5
+  dataset.num_slices:
+    distribution: categorical
+    values:
+      - 200
+      - 250
+      - 300
+  dataset.weighted_sample:
+    distribution: categorical
+    values:
+      - true 
+      - false
+  dataset.sample_strategy:
+    distribution: categorical
+    values:
+      - 'fix'
+      - 'random'
+  dataset.pretrain_args.model_type:
+    distribution: categorical
+    values:
+      - 'vit_base_14_dinov2'
+  dataset.pretrain_args.input_size:
+    distribution: categorical
+    values:
+      - 256
+  dataset.pretrain_args.channel_type:
+    distribution: categorical
+    values:
+      - window 
+
+
+
+
+#      - repeat
+#- 'vit_base_16_dinov1'
+#- 'vit_base_16_dinov1_ct'
+#- 'vit_base_16_sup'
+#- 'convnext_base_clip'
+#- 'vit_base_16_clip'
+
+#- "dataset.pretrain_args.model_type=vit_base_16_dinov1_ct"
+#- "dataset.pretrain_args.channel_type=repeat"
+
+

@@ -1,0 +1,4 @@
+type: model_2d
+model_name: resnetv2_101_ct
+pretrain_type: supervised
+num_class: 1

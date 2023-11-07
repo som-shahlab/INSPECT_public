@@ -1,0 +1,12 @@
+type: model_1d
+aggregation: attention+max
+ckpt: null 
+seq_encoder: 
+  hidden_size: 512
+  rnn_type: GRU
+  bidirectional: true
+  num_layers: 1
+  dropout_prob: 0.0
+
+pretrain_type: dinov2
+num_class: 1

@@ -1,0 +1,6 @@
+SPLIT_COL = 'Split'
+INSTANCE_PATH_COL = 'filepath'
+STUDY_COL = 'StudyInstanceUID'
+SERIES_COL = 'SeriesInstanceUID'
+INSTANCE_COL = 'SOPInstanceUID'
+INSTANCE_ORDER_COL = 'ImagePositionPatient_2'
