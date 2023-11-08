@@ -8,6 +8,7 @@ Check out our:
 * [INSPECT website](https://som-shahlab.github.io/inspect_website/)
 * [Arxiv version](https://som-shahlab.github.io/inspect_website/)
 
+Note:
 ./cohort and ./reports contains the code that was used to generate the INSPECT dataset. These programs cannot be run with the INSPECT dataset as they require identified data, but help illustrate the exact steps we did to form our cohort.
 
 ./ehr and ./image contains the code for our benchmark that tries to predict our eight labels using EHR and CT image data. These folders are designed to run on the public release of the INSPECT dataset. See the respective README.md in each subfolder to see how to run each component. The ehr processing must be run first.
