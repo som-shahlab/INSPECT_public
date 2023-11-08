@@ -7,6 +7,7 @@ This repository contains both the code to generate the INSPECT dataset as well a
 Check out our:
 * [INSPECT website](https://som-shahlab.github.io/inspect_website/)
 * [Arxiv version](https://som-shahlab.github.io/inspect_website/)
+* [Shahlab page](https://shahlab.stanford.edu/inspect)
 
 
 ### Note:
