@@ -2,7 +2,8 @@
 **Integrating Numerous Sources for Prognostic Evaluation of Clinical Timelines (INSPECT)**
 <img src="image/demo/___main_figure.png" alt="Image Description" width="600" />
 
-This repository contains both the code to generate the INSPECT dataset as well as our benchmark. Check out our 
+This repository contains both the code to generate the INSPECT dataset as well as our benchmark.
+Check out our:
 * [INSPECT website](https://som-shahlab.github.io/inspect_website/)
 * [Arxiv](https://som-shahlab.github.io/inspect_website/)
 
