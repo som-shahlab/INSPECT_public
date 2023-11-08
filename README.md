@@ -2,13 +2,17 @@
 **Integrating Numerous Sources for Prognostic Evaluation of Clinical Timelines (INSPECT)**
 <img src="image/demo/___main_figure.png" alt="Image Description" width="600" />
 
-This repository contains both the code to generate the INSPECT dataset as well as our benchmark. Check out our 
+This repository contains both the code to generate the INSPECT dataset as well as our benchmark.
+
+Check out our:
 * [INSPECT website](https://som-shahlab.github.io/inspect_website/)
-* [Arxiv](https://som-shahlab.github.io/inspect_website/)
+* [Arxiv version](https://som-shahlab.github.io/inspect_website/)
 
-./cohort and ./reports contains the code that was used to generate the INSPECT dataset. These programs cannot be run with the INSPECT dataset as they require identified data, but help illustrate the exact steps we did to form our cohort.
 
-./ehr and ./image contains the code for our benchmark that tries to predict our eight labels using EHR and CT image data. These folders are designed to run on the public release of the INSPECT dataset. See the respective README.md in each subfolder to see how to run each component. The ehr processing must be run first.
+Note:
+> ./cohort and ./reports contains the code that was used to generate the INSPECT dataset. These programs cannot be run with the INSPECT dataset as they require identified data, but help illustrate the exact steps we did to form our cohort.
+
+> ./ehr and ./image contains the code for our benchmark that tries to predict our eight labels using EHR and CT image data. These folders are designed to run on the public release of the INSPECT dataset. See the respective README.md in each subfolder to see how to run each component. The ehr processing must be run first.
 
 Once you have ran both the ehr and image analysis, you can do model fusion and reproduce our result tables by running get_model_performance.py.
 
