@@ -75,9 +75,6 @@ def run(config):
             else "Not found"
         )
         config.trainer.max_epochs = int(best_epochs)
-        print(
-            f"best epoch: {config.trainer.max_epochs} ================================"
-        )
         ckpt = None
     else:
         ckpt = None
@@ -97,6 +94,8 @@ def run(config):
         precision=config.trainer.precision,
         num_sanity_val_steps=0,
     )
+    if not config.ckpt:
+        config.ckpt = ""
 
     # find latest ckpt to continue training
     if config.ckpt.endswith("/output") or config.ckpt.endswith("/output/"):

@@ -2,7 +2,7 @@
 **Integrating Numerous Sources for Prognostic Evaluation of Clinical Timelines (INSPECT)**
 <img src="image/demo/___main_figure.png" alt="Image Description" width="600" />
 
-This repository contains both the code to generate the INSPECT dataset as well as our benchmark. Examples of [CTPA medical images](https://en.wikipedia.org/w/index.php?title=CT_pulmonary_angiogram&oldid=1116674344)
+This repository contains both the code to generate the INSPECT dataset as well as our benchmark. Check out our [INSPECT website](https://som-shahlab.github.io/inspect_website/)
 
 ./cohort and ./reports contains the code that was used to generate the INSPECT dataset. These programs cannot be run with the INSPECT dataset as they require identified data, but help illustrate the exact steps we did to form our cohort.
 
