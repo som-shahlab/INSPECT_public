@@ -5,8 +5,8 @@
 This repository contains both the code to generate the INSPECT dataset as well as our benchmark.
 
 Check out our:
-* [INSPECT website](https://som-shahlab.github.io/inspect_website/)
-* [Arxiv version](https://som-shahlab.github.io/inspect_website/)
+* [INSPECT website](https://som-shahlab.github.io/inspect-website/)
+* [Arxiv version](https://som-shahlab.github.io/inspect-website/)
 * [Shahlab page](https://shahlab.stanford.edu/inspect)
 
 
