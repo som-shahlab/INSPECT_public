@@ -5,8 +5,8 @@
 This repository contains both the code to generate the INSPECT dataset as well as our benchmark.
 
 Check out our:
-* [INSPECT website](https://som-shahlab.github.io/inspect_website/)
-* [Arxiv version](https://som-shahlab.github.io/inspect_website/)
+* [INSPECT website](https://som-shahlab.github.io/inspect-website/)
+* [Arxiv version](https://arxiv.org/abs/2311.10798)
 * [Shahlab page](https://shahlab.stanford.edu/inspect)
 
 
@@ -69,11 +69,11 @@ In order to use:
 
 > cd ehr\
 > pip install -r requirements.txt \
-> run_all_ehr.py # with the path to the INSPECT data release, a path to store output, a path to a download from Athena, and a path to a pretrained MOTOR model. 
+> run_all_ehr.py # with the path to the INSPECT data , a path to store output, a path to a download from Athena, and a path to a pretrained MOTOR model. 
 
 Athena is an OHDSI service for downloading ontologies. Simply visit https://athena.ohdsi.org, create an account, and click download at the top.
 
-MOTOR will be obtainable from  https://huggingface.co/StanfordAIMI (release still in progress).
+MOTOR will be obtainable from https://huggingface.co/StanfordShahLab/motor-t-base
 
 python run_all_ehr.py --path_to_data PATH_TO_DATASET --path_to_output PATH_TO_OUTPUT --path_to_athena PATH_TO_ATHENA_DOWNLOAD --path_to_motor PATH_TO_MOTOR
 
