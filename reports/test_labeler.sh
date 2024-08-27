@@ -26,17 +26,3 @@ do
 		--lr 2e-5 \
 		--outputdir /share/pi/nigam/projects/zphuo/data/PE/inspect/note
 done
-
-
-# python trainer.py --test /share/pi/nigam/projects/mschuang/radnotes/imon_cohort_anon/test.csv \
-#        	--pretrained /share/pi/nigam/projects/mschuang/radnotes/outputs/checkpoint-8590 \
-#        	--pretrained_tokenizer /share/pi/nigam/projects/mschuang/radnotes/Clinical-Longformer \
-# 	--batch_size 8 \
-# 	--max_len 1536 \
-#         --label_key pe_acute,pe_subsegmentalonly,pe_positive \
-#         --text_key anon_impression \
-# 	--device cuda:0 \
-# 	--n_epochs 15 \
-# 	--sep ',' \
-# 	--lr 2e-5 \
-# 	--outputdir /share/pi/nigam/projects/zphuo/data/PE/inspect/note
