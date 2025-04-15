@@ -47,7 +47,8 @@ pip install "femr_cuda[models]==0.0.20"
 To generate image model results: 
 - Make sure to change the dicom\_dir and csv\_path in configs files from **./radfusion/configs/dataset**
 - Train slice encoder using **run_rsna.sh**. Make sure the download the RSNA RESPECT dataset from [here](https://www.rsna.org/education/ai-resources-and-training/ai-image-challenge/rsna-pe-detection-challenge-2020)
-- Extract slice representation using **run_featurize.sh**. 
+- Extract slice representation using **run_featurize.sh**.
+    - Remember to change the ckpt path in **image/radfusion3/configs/model/resnetv2_ct.yaml**
 - After that you can using **run_classify_all.sh** to get classification results on all 8 tasks
     - If you want, run hyperparameter search with **wandb sweep sweep.yaml**. Note that line 8 specifies the prediction target. 
 
