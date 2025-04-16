@@ -1,0 +1,19 @@
+python run_classify.py model=model_1d dataset=stanford_featurized \
+	dataset.target=1_month_mortality \
+	dataset.pretrain_args.model_type=resnetv2_101_ct\
+	dataset.pretrain_args.channel_type=window\
+	dataset.feature_size=768 \
+	dataset.num_slices=250 \
+	model.aggregation=attention \
+	model.seq_encoder.rnn_type=GRU \
+	model.seq_encoder.bidirectional=true\
+	model.seq_encoder.num_layers=1\
+	model.seq_encoder.dropout_prob=0.5\
+	dataset.weighted_sample=false \
+	trainer.max_epochs=1\
+	lr=0.001 \
+    exp.base_dir="/local-scratch/nigam/users/zphuo/data/image_modality/outputs" \
+    output_dir="/local-scratch/nigam/users/zphuo/data/image_modality/outputs/wandb" \
+    dataset.csv_path="/share/pi/nigam/projects/zphuo/data/PE/inspect/note/Final_metadata_sample_20250303.csv" \
+    dataset.label_csv="/share/pi/nigam/projects/zphuo/data/PE/inspect/note/Final_labels_sample_20250303.csv" \
+    dataset.split_csv="/share/pi/nigam/projects/zphuo/data/PE/inspect/note/Final_splits_sample_20250303.csv" \

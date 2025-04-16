@@ -29,8 +29,12 @@ def run(config):
     lr_monitor = pl.callbacks.LearningRateMonitor(logging_interval="epoch")
     checkpoint_callback = pl.callbacks.ModelCheckpoint(
         dirpath=save_dir,
-        every_n_train_steps=2000,
-        save_top_k=-1,
+        filename='model-{epoch:02d}',
+        monitor='train/mean_auroc',  # Using training metrics since validation metrics aren't available
+        mode='max',
+        save_top_k=1,
+        save_last=True,
+        every_n_epochs=1
     )
     callbacks = [
         lr_monitor,
@@ -48,11 +52,15 @@ def run(config):
         accelerator="auto",
         max_steps=config.trainer.max_steps,
         min_steps=config.trainer.max_steps,
-        val_check_interval=config.trainer.val_check_interval,
-        limit_val_batches=config.trainer.limit_val_batches,
+        # Using limit_val_batches=0.0 will disable validation entirely
+        limit_val_batches=0.0,
         callbacks=callbacks,
         gradient_clip_val=config.trainer.gradient_clip_val,
         precision=config.trainer.precision,
+        enable_checkpointing=True,
+        enable_progress_bar=True,
+        enable_model_summary=True,
+        max_epochs=config.trainer.max_epochs,
     )
 
     # trainer.test(model=model, datamodule=dm)
@@ -62,7 +70,12 @@ def run(config):
     )
     print(len(dm.val_dataloader()), "++++++++++++++++++++++++++++++++++++++++++++++++")
     print(len(dm.test_dataloader()), "++++++++++++++++++++++++++++++++++++++++++++++++")
-    trainer.test(model=model, dataloaders=dm.all_dataloader())
+
+    # First fit the model
+    trainer.fit(model=model, datamodule=dm)
+
+    # Then test using the last checkpoint instead of best
+    trainer.test(datamodule=dm, ckpt_path="last")
 
 
 if __name__ == "__main__":
