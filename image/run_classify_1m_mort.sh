@@ -17,6 +17,7 @@ strategy=ddp
 batch_size=128
 num_workers=4
 num_slices=250
+ckpt="test"
 
 echo "***************" "1_month_mortality" "********************************************"
 for seed in $seeds
@@ -38,6 +39,7 @@ python run_classify.py model=model_1d dataset=stanford_featurized \
 	lr=0.001 \
 	trainer.seed=$seed \
 	n_gpus=$n_gpus \
+	ckpt=${ckpt} \
 	trainer.strategy=${strategy} \
 	dataset.batch_size=${batch_size} \
 	trainer.num_workers=${num_workers} \

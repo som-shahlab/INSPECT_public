@@ -35,6 +35,8 @@ python run_classify.py model=model_1d dataset=stanford_featurized \
 	model.seq_encoder.dropout_prob=0.0\
 	dataset.weighted_sample=true\
 	trainer.max_epochs=50\
+	trainer.val_check_interval=1.0\
+	trainer.limit_val_batches=1.0\
 	lr=0.0005 \
 	trainer.seed=$seed \
 	n_gpus=$n_gpus\
