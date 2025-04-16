@@ -8,7 +8,10 @@ class Model2D(nn.Module):
 
         # define cnn model
         model_function = getattr(vision_backbones, cfg.model.model_name)
-        self.model, self.feature_dim = model_function()
+        model_kwargs = {}
+        if hasattr(cfg.model, 'checkpoint_path'):
+            model_kwargs['checkpoint_path'] = cfg.model.checkpoint_path
+        self.model, self.feature_dim = model_function(**model_kwargs)
         self.classifier = nn.Linear(self.feature_dim, num_class)
         self.cfg = cfg
         self.get_features = cfg.get_features

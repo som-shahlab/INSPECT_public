@@ -1,5 +1,5 @@
-n_gpus: 2
-get_features: true 
+n_gpus: 1
+get_features: true
 stage: extract
 #output_dir: /home/mschuang/radfusion3.0/outputs
 test_split: all

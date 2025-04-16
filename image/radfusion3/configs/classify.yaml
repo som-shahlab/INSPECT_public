@@ -1,14 +1,14 @@
 n_gpus: 1
-get_features: true 
+get_features: true
 stage: classify
-output_dir: /local-scratch/nigam/projects/zphuo/data/PE/inspect/image_modality/outputs/wandb # use for wandb logging
+output_dir: /local-scratch/nigam/users/zphuo/data/image_modality/outputs/wandb # use for wandb logging
 test_split: test  # all
 ckpt: null
 
 lr: 0.0005
-optimizer: 
+optimizer:
   name: AdamW
-loss: 
+loss:
   loss_fn: BCEWithLogitsLoss
 
 monitor:
@@ -16,7 +16,7 @@ monitor:
   mode: max
 
 exp:
-  base_dir: /local-scratch/nigam/projects/zphuo/data/PE/inspect/image_modality/output # use for ckpt saving
+  base_dir: /local-scratch/nigam/users/zphuo/data/image_modality/outputs # use for ckpt saving
   name: 'classify'
 
 trainer:

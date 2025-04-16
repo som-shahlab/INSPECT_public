@@ -18,65 +18,37 @@ class Dataset2D(DatasetBase):
         self.transform = transform
         self.cfg = cfg
 
+        # Read main data
         self.df = pd.read_csv(cfg.dataset.csv_path)
 
-        # match dicom datetime format
-        self.df["procedure_time"] = self.df["procedure_time"].apply(
-            lambda x: x.replace("T", " ")
-        )
+        # Read splits if split_path is provided
+        if hasattr(cfg.dataset, 'split_path') and cfg.dataset.split_path:
+            splits_df = pd.read_csv(cfg.dataset.split_path)
+            # Merge splits with main dataframe
+            self.df = self.df.merge(splits_df, on='impression_id', how='left')
 
-        # get unique patient_datetime id  by combining patient id and datetime
-        self.df["patient_datetime"] = self.df.apply(
-            lambda x: f"{x.patient_id}_{x.procedure_time}", axis=1
-        )
-
-        if self.split != "all":
+        # Filter by split
+        if self.split != "all" and 'split' in self.df.columns:
             self.df = self.df[self.df["split"] == self.split]
 
         if self.split == "train":
             if cfg.dataset.sample_frac < 1.0:
-                num_pdt = list(self.df["patient_datetime"].unique())
-                num_sample = int(num_pdt * cfg.dataset.sample_frac)
-                sampled_pdt = np.random.choice(num_pdt, num_sample, replace=False)
-                self.df = self.df[self.df["patient_datetime"].isin(sampled_pdt)]
+                all_ids = list(self.df["impression_id"].unique())
+                num_sample = int(len(all_ids) * cfg.dataset.sample_frac)
+                sampled_ids = np.random.choice(all_ids, num_sample, replace=False)
+                self.df = self.df[self.df["impression_id"].isin(sampled_ids)]
 
-        # get all dicom files for a study
+        # get all nifti files for each impression_id
         self.all_instances = []
         for idx, row in tqdm.tqdm(self.df.iterrows(), total=len(self.df)):
-            # # glob all paths
-            # study_path = (
-            #     Path(self.cfg.dataset.dicom_dir)
-            #     / str(row["patient_id"])
-            #     / str(row["procedure_time"])
-            # )
-            # slice_paths = study_path.glob("*.dcm")
-
-            tar_content = read_tar_dicom(
-                os.path.join(
-                    self.cfg.dataset.dicom_dir, str(row["patient_id"]) + ".tar"
-                )
-            )
-            prefix = "./" + str(row["procedure_time"]) + "/"
-            slice_paths = [
-                slice_path
-                for slice_path in tar_content.keys()
-                if slice_path.startswith(prefix)
-            ]
-
-            # each instance includes patient datetime, patient id , datetime, instance idx and path
-            for slice_path in slice_paths:
-                # instance_idx = last digits of path
-                instance_idx = str(slice_path).split("/")[-1].replace(".dcm", "")
-                self.all_instances.append(
-                    [row["patient_datetime"], instance_idx, slice_path]
-                )
-        # print(self.all_instances)
+            nifti_path = os.path.join(self.cfg.dataset.dicom_dir, row['image_id'])  # image_id already has .nii.gz
+            self.all_instances.append([row["impression_id"], 0, nifti_path])  # Use impression_id as identifier
 
     def __getitem__(self, index):
         # get slice row
         pdt, instance_idx, slice_path = self.all_instances[index]
 
-        # read slice from dicom
+        # read slice from file
         ct_slice = self.process_slice(slice_path=slice_path)
 
         # transform
@@ -87,7 +59,7 @@ class Dataset2D(DatasetBase):
             ct_slice = Image.fromarray(np.uint8(ct_slice * 255)).convert("RGB")
         x = self.transform(ct_slice)
 
-        # check dimention
+        # check dimension
         if x.shape[0] == 1:  # for repeat
             c, w, h = list(x.shape)
             x = x.expand(3, w, h)
@@ -100,6 +72,25 @@ class Dataset2D(DatasetBase):
 
     def __len__(self):
         return len(self.all_instances)
+
+    def process_slice(self, slice_info: pd.Series = None, dicom_dir: Path = None, slice_path: str = None):
+        """process slice with windowing, resize and transforms"""
+        if slice_path is None:
+            slice_path = dicom_dir / slice_info[INSTANCE_PATH_COL]
+        slice_array = self.read_image(slice_path)  # Use read_image instead of read_dicom
+
+        # window
+        if self.cfg.dataset.transform.channels == "repeat":
+            ct_slice = self.windowing(slice_array, 400, 1000)  # use PE window by default
+        else:
+            ct_slice = [
+                self.windowing(slice_array, -600, 1500),  # LUNG window
+                self.windowing(slice_array, 400, 1000),  # PE window
+                self.windowing(slice_array, 40, 400),  # MEDIASTINAL window
+            ]
+            ct_slice = np.stack(ct_slice)
+
+        return ct_slice
 
 
 class RSNADataset2D(DatasetBase):

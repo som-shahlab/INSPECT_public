@@ -1,15 +1,16 @@
 type: 2d
-csv_path: '/share/pi/nigam/projects/zphuo/data/omop_extract_PHI/som-nero-phi-nigam-starr.frazier/cohort_0.2.0_master_file_anon.csv'
+csv_path: '/share/pi/nigam/projects/zphuo/data/PE/inspect/note/Final_metadata_sample_20250303.csv'
+split_path: '/share/pi/nigam/projects/zphuo/data/PE/inspect/note/Final_splits_sample_20250303.csv'
+metadata_path: '/share/pi/nigam/projects/zphuo/data/PE/inspect/note/Final_metadata.csv'
 sample_frac: 1.0
-dicom_dir: /local-scratch/nigam/datasets/PE/inspect/anon_dicoms_tar/
+dicom_dir: /local-scratch/nigam/datasets/PE/inspect/anon_nii_gz/AIMI_ct_all/
 output_dir: /local-scratch/nigam/datasets/PE/inspect/anon_pe_features_full_new
 
-
 batch_size: 256
+weighted_sample: false
 
 transform:
-    channels: repeat 
+    channels: window
     resize_size: 256
     crop_size: 224
     final_size: 224
-

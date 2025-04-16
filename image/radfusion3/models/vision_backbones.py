@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torchvision
 import timm
+import os
 
 from torchvision import models as model_2d
 
@@ -34,18 +35,20 @@ def resnetv2_101_sup(**kwargs):
 
 
 def resnetv2_101_ct(**kwargs):
-    model = timm.create_model("resnetv2_101x3_bitm_in21k", pretrained=True)
+    # Create model without pretrained weights
+    model = timm.create_model("resnetv2_101x3_bitm_in21k", pretrained=False)
     model.head.fc = Identity()
 
-    # checkpoint = torch.load('/home/mschuang/radfusion3.0/ckpt/resnetv2_ct.ckpt')
-    checkpoint = torch.load(
-        "/share/pi/nigam/projects/zphuo/data/PE/inspect/image_modality/ckpt/resnetv2_ct.ckpt"
-    )
-    ckpt = {k.replace("model.", ""): v for k, v in checkpoint["state_dict"].items()}
-    msg = model.load_state_dict(ckpt, strict=False)
-    print("=" * 80)
-    print(msg)
-    print("=" * 80)
+    # Load from checkpoint path provided in kwargs or config
+    if 'checkpoint_path' in kwargs:
+        checkpoint = torch.load(kwargs['checkpoint_path'])
+        ckpt = {k.replace("model.", ""): v for k, v in checkpoint["state_dict"].items()}
+        msg = model.load_state_dict(ckpt, strict=False)
+        print("=" * 80)
+        print("Loading checkpoint from:", kwargs['checkpoint_path'])
+        print(msg)
+        print("=" * 80)
+
     return model, 6144
 
 

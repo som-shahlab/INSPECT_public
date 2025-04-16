@@ -19,43 +19,42 @@ class Dataset1D(DatasetBase):
 
         self.cfg = cfg
         self.df = pd.read_csv(cfg.dataset.csv_path)
+
         if "rsna" not in cfg.dataset.csv_path:
-            self.df["patient_datetime"] = self.df.apply(
-                lambda x: f"{x.patient_id}_{x.procedure_time}", axis=1
-            )
+            # Use image_id directly from metadata and create impression_id
+            self.df["patient_datetime"] = self.df["image_id"].str.replace(".nii.gz", "")
+            # Set impression_id to be the same as patient_datetime if not present
+            if 'impression_id' not in self.df.columns:
+                self.df['impression_id'] = self.df["patient_datetime"]
+
             # duplicate patient_datetime remove
             self.df = self.df.drop_duplicates(subset=["patient_datetime"])
 
-            if split != "all":
+            # Read labels if provided separately
+            if hasattr(cfg.dataset, 'label_csv') and cfg.dataset.label_csv:
+                label_df = pd.read_csv(cfg.dataset.label_csv)
+                self.df = self.df.merge(label_df, on='impression_id', how='left')
+
+            # Read splits if provided separately
+            if hasattr(cfg.dataset, 'split_csv') and cfg.dataset.split_csv:
+                split_df = pd.read_csv(cfg.dataset.split_csv)
+                self.df = self.df.merge(split_df, on='impression_id', how='left')
+
+            if split != "all" and 'split' in self.df.columns:
                 self.df = self.df[self.df["split"] == split]
 
         if split == "test":
             self.cfg.dataset.sample_strategy = "fix"
 
         # hdf5 path
-        model_type = self.cfg.dataset.pretrain_args.model_type
-        input_size = self.cfg.dataset.pretrain_args.input_size
-        channel_type = self.cfg.dataset.pretrain_args.channel_type
-        # self.hdf5_path = os.path.join(
-        #     self.cfg.exp.base_dir,
-        #     f"{model_type}_{input_size}_{channel_type}_features/"
-        #     + f"{model_type}_{input_size}_{channel_type}_features.hdf5",
-        # )
-        # self.hdf5_path = "/share/pi/nigam/projects/zphuo/data/PE/inspect/image_modality/anon_pe_features_full/features.hdf5"
         self.hdf5_path = self.cfg.dataset.hdf5_path
 
-        # self.cfg.dataset.hdf5_path
         if self.hdf5_path is None:
             raise Exception("Encoded slice HDF5 required")
 
         if "rsna" not in cfg.dataset.csv_path:
             self.df = self.df[~self.df[cfg.dataset.target].isin(["Censored", "Censor"])]
-
-            self.study = (
-                self.df["patient_datetime"]
-                .apply(lambda x: x.replace("T", " "))
-                .tolist()
-            )
+            self.study = self.df["patient_datetime"].tolist()
         else:
             self.study = self.df["SeriesInstanceUID"].tolist()
 
@@ -68,7 +67,9 @@ class Dataset1D(DatasetBase):
     def __getitem__(self, index):
         # read featurized series
         study = self.study[index]
-        x = self.read_from_hdf5(study, hdf5_path=self.hdf5_path)
+        # Use the image_id (without .nii.gz) as the key
+        key = study.replace(".nii.gz", "")
+        x = self.read_from_hdf5(key, hdf5_path=self.hdf5_path)
 
         # fix number of slices
         x, mask = self.fix_series_slice_number(x)

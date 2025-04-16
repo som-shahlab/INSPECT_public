@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import cv2
 import h5py
+import nibabel as nib
 
 from ..constants import *
 from torch.utils.data import Dataset
@@ -71,6 +72,7 @@ class DatasetBase(Dataset):
         return arr
 
     def read_dicom(self, file_path: str, resize_size=None, channels=None):
+        """Legacy DICOM reader, kept for compatibility"""
         if resize_size is None:
             resize_size = self.cfg.dataset.transform.resize_size
         if channels is None:
@@ -106,6 +108,58 @@ class DatasetBase(Dataset):
         pixel_array = pixel_array * slope + intercept
 
         # resize
+        if resize_size != pixel_array.shape[-1]:
+            pixel_array = cv2.resize(
+                pixel_array, (resize_size, resize_size), interpolation=cv2.INTER_AREA
+            )
+
+        return pixel_array
+
+    def read_image(self, file_path: str, resize_size=None, channels=None):
+        """Read medical image in DICOM or NIfTI format"""
+        if resize_size is None:
+            resize_size = self.cfg.dataset.transform.resize_size
+        if channels is None:
+            channels = self.cfg.dataset.transform.channels
+
+        # Read image based on format
+        if file_path.endswith('.nii.gz'):
+            # Read NIfTI
+            nifti_img = nib.load(file_path)
+            pixel_array = nifti_img.get_fdata()
+            # NIfTI doesn't use rescale slope/intercept like DICOM
+            # but we'll keep consistent array preprocessing
+            if len(pixel_array.shape) > 2:
+                # Take first volume/timepoint if 4D
+                pixel_array = pixel_array[:, :, 0] if len(pixel_array.shape) == 3 else pixel_array[:, :, 0, 0]
+        else:
+            # Read DICOM
+            if "rsna" in self.cfg.dataset.csv_path:
+                dcm = pydicom.dcmread(file_path)
+            else:
+                patient_id = file_path.split("/")[-1].split("_")[0]
+                tar_content = read_tar_dicom(
+                    os.path.join(self.cfg.dataset.dicom_dir, patient_id + ".tar")
+                )
+                dcm = pydicom.dcmread(io.BytesIO(tar_content[file_path]))
+
+            try:
+                pixel_array = dcm.pixel_array
+                try:
+                    intercept = dcm.RescaleIntercept
+                    slope = dcm.RescaleSlope
+                except:
+                    intercept = 0
+                    slope = 1
+                pixel_array = pixel_array * slope + intercept
+            except:
+                print(f"Error reading {file_path}")
+                if channels == "repeat":
+                    pixel_array = np.zeros((resize_size, resize_size))
+                else:
+                    pixel_array = np.zeros((3, resize_size, resize_size))
+
+        # Resize image
         if resize_size != pixel_array.shape[-1]:
             pixel_array = cv2.resize(
                 pixel_array, (resize_size, resize_size), interpolation=cv2.INTER_AREA

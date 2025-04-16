@@ -2,3 +2,4 @@ type: model_2d
 model_name: resnetv2_101_ct
 pretrain_type: supervised
 num_class: 1
+checkpoint_path: /share/pi/nigam/projects/zphuo/data/PE/inspect/image_modality/ckpt/resnetv2_ct/resnetv2_ct.ckpt

@@ -104,7 +104,12 @@ class ClassificationLightningModel(LightningModule):
             outfile = defaultdict(list)
             for ids, label, p in zip(all_ids, all_label, all_p):
                 if "rsna" not in self.cfg.dataset.csv_path:
-                    pid, datetime = ids.split("_")
+                    if "_" in ids:
+                        pid, datetime = ids.split("_")
+                    else:
+                        # Handle IDs without underscore
+                        pid = ids
+                        datetime = ids
                 elif "rsna" in self.cfg.dataset.csv_path:
                     pid = ids
                     datetime = pid
@@ -116,19 +121,24 @@ class ClassificationLightningModel(LightningModule):
             df = pd.DataFrame.from_dict(outfile)
             df.to_csv(out_dir, index=False)
             print("=" * 80)
-            print(f"Config saved at: {out_dir})")
-            print(f"Predictions saved at: {out_dir})")
+            print(f"Config saved at: {config_out_dir}")
+            print(f"Predictions saved at: {out_dir}")
             print("=" * 80)
 
         # log auroc
         auroc_dict = utils.get_auroc(y, prob, self.target_names)
         for k, v in auroc_dict.items():
             self.log(f"{split}/{k}_auroc", v, on_epoch=True, logger=True, prog_bar=True)
+            if k == "":
+                self.log(f"{split}/mean_auroc", v, on_epoch=True, logger=True, prog_bar=True)
 
         # log auprc
         auprc_dict = utils.get_auprc(y, prob, self.target_names)
         for k, v in auprc_dict.items():
             self.log(f"{split}/{k}_auprc", v, on_epoch=True, logger=True, prog_bar=True)
+            if k == "":
+                self.log(f"{split}/mean_auprc", v, on_epoch=True, logger=True, prog_bar=True)
 
-        # self.step_outputs = defaultdict(lambda: defaultdict(list))
-        del self.step_outputs[split]
+        self.step_outputs[split]["logit"].clear()
+        self.step_outputs[split]["y"].clear()
+        self.step_outputs[split]["ids"].clear()
