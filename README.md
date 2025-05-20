@@ -9,6 +9,8 @@ Check out our:
 * [Arxiv version](https://arxiv.org/abs/2311.10798)
 * [Shahlab page](https://shahlab.stanford.edu/inspect)
 
+> 🔔 **Notice (May 2025)**  
+> New tutorial for labeling, model weight download, etc. can be found [here](https://github.com/som-shahlab/tte-pretraining)
 
 ### Note:
 
